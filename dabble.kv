@@ -1,3 +1,55 @@
 <SM>:
     GameScreen
 
+<GameScreen>:
+    FloatLayout:
+        Deck:
+            id: deck
+            pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+        Card:
+            id: card
+            pos_hint: {'center_x': 0.5, 'center_y': 0.25}
+        Label:
+            pos_hint: {'center_x': 0.75, 'center_y': 0.25}
+            text: '15'
+
+<Deck>:
+    size_hint: 0.25, None
+    height: self.width
+    canvas.before:
+        Color:
+            rgb: 1, 1, 1
+        Ellipse:
+            size: self.size
+            pos: [self.center_x - self.width/2, self.center_y - self.height/2]
+
+<Card>:
+    size_hint: 0.25, None
+    height: self.width
+    canvas.before:
+        Color:
+            rgb: 1, 1, 1
+        Ellipse:
+            size: self.size
+            pos: [self.center_x - self.width/2, self.center_y - self.height/2]
+    #canvas.after:
+     #   Rectangle:
+      #      size: self.width/6, self.height/6
+       #     pos: self.center_x - 50, self.center_y - 50 # default size is 100x100
+        #    source: 'dab1.png'
+    FloatLayout:
+        CardImage:
+            center: root.center
+            image: root.images[0]
+
+<CardImage>:
+    source: 'cat1.png'
+    #size: self.size
+    size_hint: 0.3, 0.3
+    allow_stretch: True
+    keep_ratio: False
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: root.source
