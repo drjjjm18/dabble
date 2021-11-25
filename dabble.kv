@@ -1,3 +1,5 @@
+#:import randint random.randint
+
 <SM>:
     GameScreen
 
@@ -6,12 +8,28 @@
         Deck:
             id: deck
             pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+            FloatLayout:
+                DeckImage:
+                    center: self.parent.parent.center
+                    image: self.parent.parent.images[0] #self.parent.parent.im # root.images[0]
+                    source: root.image_lookup[self.image] #'test.png'
         Card:
             id: card
+            im: root.im
             pos_hint: {'center_x': 0.5, 'center_y': 0.25}
+            FloatLayout:
+                CardImage:
+                    id: 'im1'
+                    center: self.parent.parent.center
+                    image: self.parent.parent.images[0] #self.parent.parent.im # root.images[0]
+                    source: root.image_lookup[self.image]#'test.png'
+
+        Label:
+            pos_hint: {'center_x': 0.75, 'center_y': 0.3}
+            text: 'Total Cards:'
         Label:
             pos_hint: {'center_x': 0.75, 'center_y': 0.25}
-            text: '15'
+            text: str(card.total)
 
 <Deck>:
     size_hint: 0.25, None
@@ -32,24 +50,23 @@
         Ellipse:
             size: self.size
             pos: [self.center_x - self.width/2, self.center_y - self.height/2]
-    #canvas.after:
-     #   Rectangle:
-      #      size: self.width/6, self.height/6
-       #     pos: self.center_x - 50, self.center_y - 50 # default size is 100x100
-        #    source: 'dab1.png'
-    FloatLayout:
-        CardImage:
-            center: root.center
-            image: root.images[0]
+
 
 <CardImage>:
-    source: 'cat1.png'
-    #size: self.size
     size_hint: 0.3, 0.3
-    allow_stretch: True
-    keep_ratio: False
     canvas.before:
-        Rectangle:
-            pos: self.pos
-            size: self.size
-            source: root.source
+        PushMatrix
+        Rotate:
+            angle: randint(0, 360)
+            origin: self.center
+    canvas.after:
+        PopMatrix
+<DeckImage>:
+    size_hint: 0.3, 0.3
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: randint(0, 360)
+            origin: self.center
+    canvas.after:
+        PopMatrix
