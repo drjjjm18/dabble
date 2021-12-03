@@ -12,7 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
 from kivy.properties import ObjectProperty, ListProperty, NumericProperty, DictProperty, StringProperty
-from random import choice
+from random import choice, randint, uniform
 
 
 class GameScreen(Screen):
@@ -63,9 +63,14 @@ class SM(ScreenManager):
 
 class CardImage(Image):
     image = NumericProperty()
+    angle = NumericProperty()
 
     def __init__(self, **kwargs):
         super(CardImage, self).__init__(**kwargs)
+        self.angle = randint(0, 360)
+        self.rand_x = 0.25
+        self.rand_y = 0.45
+        self.size_hint = uniform(self.rand_x, self.rand_y), uniform(self.rand_x, self.rand_y)
 
     def on_touch_down(self, touch):
 
@@ -77,9 +82,12 @@ class CardImage(Image):
             if gm.card_match == gm.deck_match:
                 App.get_running_app().gm.matched()
 
+    def on_image(self, instance, value):
+        self.angle = randint(0, 360)
+        self.size_hint = uniform(self.rand_x, self.rand_y), uniform(self.rand_x, self.rand_y)
 
-class DeckImage(Image):
-    image = NumericProperty()
+
+class DeckImage(CardImage):
 
     def on_touch_down(self, touch):
 

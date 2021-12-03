@@ -1,4 +1,4 @@
-#:import randint random.randint
+#:import rand random.uniform
 
 <SM>:
     GameScreen
@@ -7,32 +7,87 @@
     FloatLayout:
         Deck:
             id: deck
-            pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.675}
             FloatLayout:
                 DeckImage:
-                    center: self.parent.parent.center
-                    image: self.parent.parent.images[0] #self.parent.parent.im # root.images[0]
-                    source: root.image_lookup[self.image] #'test.png'
+                    center: deck.center_x - 10, deck.center_y -20
+                    image: deck.images[0]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+35, deck.center_y+35
+                    image: deck.images[1]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x-30, deck.center_y+40
+                    image: deck.images[2]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+10, deck.center_y+100
+                    image: deck.images[3]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+40, deck.center_y-35
+                    image: deck.images[4]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+90, deck.center_y+40
+                    image: deck.images[5]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+70, deck.center_y+90
+                    image: deck.images[6]
+                    source: root.image_lookup[self.image]
+                DeckImage:
+                    center: deck.center_x+90, deck.center_y-10
+                    image: deck.images[7]
+                    source: root.image_lookup[self.image]
         Card:
             id: card
             im: root.im
             pos_hint: {'center_x': 0.5, 'center_y': 0.25}
             FloatLayout:
                 CardImage:
-                    id: 'im1'
-                    center: self.parent.parent.center
-                    image: self.parent.parent.images[0] #self.parent.parent.im # root.images[0]
-                    source: root.image_lookup[self.image]#'test.png'
+                    center: card.center_x - 10, card.center_y -20
+                    image: card.images[0]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+35, card.center_y+35
+                    image: card.images[1]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x-30, card.center_y+40
+                    image: card.images[2]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+10, card.center_y+100
+                    image: card.images[3]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+40, card.center_y-35
+                    image: card.images[4]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+90, card.center_y+40
+                    image: card.images[5]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+70, card.center_y+90
+                    image: card.images[6]
+                    source: root.image_lookup[self.image]
+                CardImage:
+                    center: card.center_x+90, card.center_y-10
+                    image: card.images[7]
+                    source: root.image_lookup[self.image]
 
         Label:
-            pos_hint: {'center_x': 0.75, 'center_y': 0.3}
+            pos_hint: {'center_x': 0.8, 'center_y': 0.3}
             text: 'Total Cards:'
         Label:
-            pos_hint: {'center_x': 0.75, 'center_y': 0.25}
+            pos_hint: {'center_x': 0.8, 'center_y': 0.25}
             text: str(card.total)
 
 <Deck>:
-    size_hint: 0.25, None
+    size_hint: 0.35, None
     height: self.width
     canvas.before:
         Color:
@@ -42,7 +97,7 @@
             pos: [self.center_x - self.width/2, self.center_y - self.height/2]
 
 <Card>:
-    size_hint: 0.25, None
+    size_hint: 0.35, None
     height: self.width
     canvas.before:
         Color:
@@ -53,20 +108,12 @@
 
 
 <CardImage>:
-    size_hint: 0.3, 0.3
     canvas.before:
         PushMatrix
         Rotate:
-            angle: randint(0, 360)
+            angle: self.angle
             origin: self.center
     canvas.after:
         PopMatrix
+
 <DeckImage>:
-    size_hint: 0.3, 0.3
-    canvas.before:
-        PushMatrix
-        Rotate:
-            angle: randint(0, 360)
-            origin: self.center
-    canvas.after:
-        PopMatrix
