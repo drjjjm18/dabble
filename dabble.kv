@@ -1,44 +1,47 @@
 #:import rand random.uniform
 
 <SM>:
+    EnterName
+    Waiting
     GameScreen
 
 <GameScreen>:
+    name: 'gamescreen'
     FloatLayout:
         Deck:
             id: deck
             pos_hint: {'center_x': 0.5, 'center_y': 0.675}
             FloatLayout:
                 DeckImage:
-                    center: deck.center_x - 10, deck.center_y -20
+                    center: deck.center_x - 40, deck.center_y -50
                     image: deck.images[0]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+35, deck.center_y+35
+                    center: deck.center_x, deck.center_y
                     image: deck.images[1]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x-30, deck.center_y+40
+                    center: deck.center_x-60, deck.center_y+10
                     image: deck.images[2]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+10, deck.center_y+100
+                    center: deck.center_x-20, deck.center_y+70
                     image: deck.images[3]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+40, deck.center_y-35
+                    center: deck.center_x+10, deck.center_y-65
                     image: deck.images[4]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+90, deck.center_y+40
+                    center: deck.center_x+60, deck.center_y+10
                     image: deck.images[5]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+70, deck.center_y+90
+                    center: deck.center_x+40, deck.center_y+60
                     image: deck.images[6]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+90, deck.center_y-10
+                    center: deck.center_x+60, deck.center_y-40
                     image: deck.images[7]
                     source: root.image_lookup[self.image]
         Card:
@@ -47,35 +50,35 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.25}
             FloatLayout:
                 CardImage:
-                    center: card.center_x - 10, card.center_y -20
+                    center: card.center_x - 40, card.center_y -50
                     image: card.images[0]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+35, card.center_y+35
+                    center: card.center_x, card.center_y
                     image: card.images[1]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x-30, card.center_y+40
+                    center: card.center_x-60, card.center_y+10
                     image: card.images[2]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+10, card.center_y+100
+                    center: card.center_x-20, card.center_y+70
                     image: card.images[3]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+40, card.center_y-35
+                    center: card.center_x+10, card.center_y-65
                     image: card.images[4]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+90, card.center_y+40
+                    center: card.center_x+60, card.center_y+10
                     image: card.images[5]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+70, card.center_y+90
+                    center: card.center_x+40, card.center_y+60
                     image: card.images[6]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+90, card.center_y-10
+                    center: card.center_x+60, card.center_y-40
                     image: card.images[7]
                     source: root.image_lookup[self.image]
 
@@ -117,3 +120,38 @@
         PopMatrix
 
 <DeckImage>:
+
+<EnterName>:
+    FloatLayout:
+        Label:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+            text: 'WELCOME TO DABBLE'
+            font_size: 50
+        Label:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+            size_hint: 0.2, 0.2
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    source: 'resized/cat1.png'
+        Label:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            text: 'Enter Name:'
+            font_size: 35
+        TextInput:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: 0.5, 0.1
+            font_size: 35
+            on_text: app.name = self.text
+        Button:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.35}
+            size_hint: 0.5, 0.1
+            text: 'PLAY'
+            font_size: 35
+            on_press: root.enter_game()
+
+<Waiting>:
+    name: 'waiting'
+    Label:
+        text: 'waiting'

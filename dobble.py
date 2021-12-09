@@ -66,8 +66,8 @@ def print_cards(cards):
 
 def image_lookup():
     return {
-             0: 'test.png',
-             1: 'resized/anchor.png',
+             0: 'resized/white.png',
+             1: 'resized/ap.png',#'resized/anchor.png',
              2: 'resized/apple.png',
              3: 'resized/birdie.png',
              4: 'resized/bolt.png',

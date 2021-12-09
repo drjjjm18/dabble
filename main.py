@@ -13,9 +13,50 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
 from kivy.properties import ObjectProperty, ListProperty, NumericProperty, DictProperty, StringProperty
 from random import choice, randint, uniform
+from kivy.support import install_twisted_reactor
+install_twisted_reactor()
+from twisted.internet.protocol import Protocol, ClientFactory
+from twisted.internet import reactor
+import pickle
+
+
+class Client(Protocol):
+
+    def __init__(self, **kwargs):
+        super(Client, self).__init__(**kwargs)
+        App.get_running_app().connection = self
+        self.app = App.get_running_app()
+
+    def connectionMade(self):
+        self.transport.write(pickle.dumps(['join', self.app.name]))
+
+    def dataReceived(self, data):
+        msg = pickle.loads(data)
+        if msg[0] == 'joined':
+            self.app.sm.current = 'waiting'
+
+
+class NewClientFactory(ClientFactory):
+    def startedConnecting(self, connector):
+        print('Started to connect.')
+
+    def buildProtocol(self, addr):
+        print('building protocol')
+
+        # App.get_running_app().gm.ids.nought1.possession = True
+        # App.get_running_app().sm.current = "GameScreen"
+        # Clock.schedule_interval(App.get_running_app().pitch.tick_move_clock, 1)
+        return Client()
+
+    def clientConnectionLost(self, connector, reason):
+        pass
+
+    def clientConnectionFailed(self, connector, reason):
+        print('Connection failed. Reason:', reason)
 
 
 class GameScreen(Screen):
+
     cards = ListProperty()
     image_lookup = DictProperty()
     im = NumericProperty(0)
@@ -35,6 +76,16 @@ class GameScreen(Screen):
         self.ids.card.images = choice(self.cards)
         self.ids.deck.images = choice(self.cards)
 
+
+class EnterName(Screen):
+
+    def enter_game(self):
+        app = App.get_running_app()
+        app.connect_to_server()
+
+
+class Waiting(Screen):
+    pass
 
 class Deck(Widget):
     images = ListProperty()
@@ -69,7 +120,7 @@ class CardImage(Image):
         super(CardImage, self).__init__(**kwargs)
         self.angle = randint(0, 360)
         self.rand_x = 0.25
-        self.rand_y = 0.45
+        self.rand_y = 0.5
         self.size_hint = uniform(self.rand_x, self.rand_y), uniform(self.rand_x, self.rand_y)
 
     def on_touch_down(self, touch):
@@ -103,10 +154,14 @@ class DeckImage(CardImage):
 class DabbleApp(App):
     sm = ObjectProperty()
     gm = ObjectProperty()
+    name = StringProperty('')
 
     def build(self):
         sm = SM()
         return sm
+
+    def connect_to_server(self):
+        reactor.connectTCP('localhost', 8001, NewClientFactory())  # server: '18.222.132.112' # home server:81.100.102.190
 
 
 if __name__ == '__main__':
