@@ -81,6 +81,8 @@ class EnterName(Screen):
 
     def enter_game(self):
         app = App.get_running_app()
+        if app.name == '' or app.name == 'Amrik':
+            app.name = 'xXxCAT4LYF'+str(randint(10,99))+'xXx'
         app.connect_to_server()
 
 
