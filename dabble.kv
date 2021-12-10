@@ -2,12 +2,15 @@
 
 <SM>:
     EnterName
-    Waiting
+    Lobby
     GameScreen
 
 <GameScreen>:
     name: 'gamescreen'
     FloatLayout:
+        Label:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+            text: root.display_text
         Deck:
             id: deck
             pos_hint: {'center_x': 0.5, 'center_y': 0.675}
@@ -122,6 +125,7 @@
 <DeckImage>:
 
 <EnterName>:
+    name: 'entername'
     FloatLayout:
         Label:
             pos_hint: {'center_x': 0.5, 'center_y': 0.9}
@@ -151,7 +155,50 @@
             font_size: 35
             on_press: root.enter_game()
 
-<Waiting>:
-    name: 'waiting'
-    Label:
-        text: 'waiting'
+<Lobby>:
+    name: 'lobby'
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                size_hint_y: 0.2
+                text: 'Players in arena:'
+            RV:
+        FloatLayout:
+            Label:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+                text: '    DABBLE \n Arena Lobby'
+                font_size: 35
+            Label:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+                text: root.latest
+                font_size: 20
+            Label:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                text: 'has entered the arena'
+                font_size: 20
+            Button:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+                size_hint: 0.75, 0.1
+                text: 'READY'
+                on_press: root.ready_press()
+            Label:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+                text: root.ready_text
+            Button:
+                pos_hint: {'center_x': 0.5, 'center_y': 0.1}
+                size_hint: 0.75, 0.1
+                text: 'BEGIN GAME'
+                on_press: root.begin_press()
+        FloatLayout:
+
+<RV>:
+    viewclass: 'Label'
+    RecycleBoxLayout:
+        default_size: dp(200), dp(30)
+        #default_size_hint: 1, 0.1
+        size_hint_y: None
+        height: self.minimum_height
+        width: self.minimum_width
+        orientation: 'vertical'

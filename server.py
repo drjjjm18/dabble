@@ -1,28 +1,53 @@
 from twisted.internet.protocol import Factory, Protocol
+from twisted.protocols.basic import LineReceiver
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.internet import reactor, task
 import pickle
+import dobble
 
 
-class QOTD(Protocol):
+class QOTD(LineReceiver):
 
     def __init__(self, factory):
 
         self.factory = factory
+        self.name = None
+        self.ready = False
 
     def connectionMade(self):
-        pass
+        self.factory.cons.append(self)
 
     def connectionLost(self, reason):
-        pass
+        self.factory.names.remove(self.name)
+        self.factory.cons.remove(self)
+        self.update_players()
 
     def dataReceived(self, data):
         msg = pickle.loads(data)
         x = msg[0]
+        print(x)
         if x == 'join':
-            self.factory.names.append(msg[1])
-            print(self.factory.names)
-            self.transport.write(pickle.dumps(['joined']))
+            self.name = msg[1]
+            self.factory.names.append(self.name)
+            self.update_players()
+
+        if x == 'ready':
+            if msg[1] == 'y':
+                self.ready = True
+            else:
+                self.ready = False
+
+        if x == 'begin':
+            if not self.factory.starting:
+                self.factory.starting = True
+                self.factory.begin_game()
+
+    def update_players(self):
+        # self.factory.update_player_list()
+        l1 = ['players']
+        msg = pickle.dumps(l1 + self.factory.names)
+        for x in self.factory.cons:
+            x.sendLine(msg)
 
 
 class QOTDFactory(Factory):
@@ -30,11 +55,37 @@ class QOTDFactory(Factory):
     protocol = QOTD
 
     def __init__(self):
-       self.names = []
+        self.names = []
+        self.cons = []
+        self.starting = False
+        self.cards = []
 
     def buildProtocol(self, addr):
-
         return QOTD(self)
+
+    def update_player_list(self):
+        print('updating players')
+        for x in self.cons:
+            l1 = ['players']
+            msg = pickle.dumps(l1 + self.names)
+            print(x.name)
+            x.sendLine(msg)
+
+    def begin_game(self):
+        if not all(x.ready for x in self.cons):
+            print('not ready!')
+            self.starting = False
+        else:
+
+            self.cards = dobble.create_cards()
+            deckcard = self.cards.pop(0)
+            for x in self.cons:
+                card = self.cards.pop(0)
+                x.sendLine(pickle.dumps(['begin', deckcard, card]))
+                print(len(self.cards))
+            self.starting = False
+            for x in self.cons:
+                x.ready = False
 
 
 endpoint = TCP4ServerEndpoint(reactor, 8001)

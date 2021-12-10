@@ -4,10 +4,7 @@ Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'width', '600')
 Config.set('graphics', 'height', '600')
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
+from kivy.uix.recycleview import RecycleView
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
@@ -17,10 +14,11 @@ from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 from twisted.internet.protocol import Protocol, ClientFactory
 from twisted.internet import reactor
+from twisted.protocols.basic import LineReceiver
 import pickle
+from kivy.clock import Clock
 
-
-class Client(Protocol):
+class Client(LineReceiver):
 
     def __init__(self, **kwargs):
         super(Client, self).__init__(**kwargs)
@@ -30,10 +28,21 @@ class Client(Protocol):
     def connectionMade(self):
         self.transport.write(pickle.dumps(['join', self.app.name]))
 
-    def dataReceived(self, data):
-        msg = pickle.loads(data)
-        if msg[0] == 'joined':
-            self.app.sm.current = 'waiting'
+    def lineReceived(self, line):
+        msg = pickle.loads(line)
+        print(msg)
+        if msg[0] == 'players':
+            if self.app.sm.current == 'entername':
+                self.app.sm.current = 'lobby'
+            self.app.rv.players = msg[1:]
+            self.app.lobby.latest = msg[-1]
+            return
+        if msg[0] == 'begin':
+            print('beginning')
+            self.app.sm.current = 'gamescreen'
+            return
+
+        return
 
 
 class NewClientFactory(ClientFactory):
@@ -43,9 +52,6 @@ class NewClientFactory(ClientFactory):
     def buildProtocol(self, addr):
         print('building protocol')
 
-        # App.get_running_app().gm.ids.nought1.possession = True
-        # App.get_running_app().sm.current = "GameScreen"
-        # Clock.schedule_interval(App.get_running_app().pitch.tick_move_clock, 1)
         return Client()
 
     def clientConnectionLost(self, connector, reason):
@@ -62,11 +68,12 @@ class GameScreen(Screen):
     im = NumericProperty(0)
     card_match = NumericProperty(100)
     deck_match = NumericProperty(100)
+    display_text = StringProperty()
 
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
         App.get_running_app().gm = self
-        self.cards = dobble.create_cards()
+        #self.cards = dobble.create_cards()
         self.image_lookup = dobble.image_lookup()
 
     def matched(self):
@@ -76,20 +83,62 @@ class GameScreen(Screen):
         self.ids.card.images = choice(self.cards)
         self.ids.deck.images = choice(self.cards)
 
+    def on_enter(self, *args):
+        self.count_down()
+
+    def count_down(self):
+        self.display_text = 'Game beginning in...'
+        Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'Game beginning in 3'), 2)
+        Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'Game beginning in 2'), 3)
+        Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'Game beginning in 1'), 4)
+        Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'BEGIN'), 5)
+
 
 class EnterName(Screen):
 
     def enter_game(self):
         app = App.get_running_app()
-        if app.name == '' or app.name == 'Amrik':
-            app.name = 'xXxCAT4LYF'+str(randint(10,99))+'xXx'
+        if app.name == '' or str(app.name).lower() == 'amrik':
+            app.name = 'xXxCAT4LYF'+str(randint(10, 99))+'xXx'
         app.connect_to_server()
 
 
-class Waiting(Screen):
-    pass
+class Lobby(Screen):
+    latest = StringProperty('')
+    ready_text = StringProperty()
+
+    def __init__(self, **kwargs):
+        super(Lobby, self).__init__(**kwargs)
+        App.get_running_app().lobby = self
+        self.ready_text = 'Not ready'
+
+    def ready_press(self):
+        if self.ready_text == 'Not ready':
+            self.ready_text = 'READY!'
+            App.get_running_app().connection.transport.write(pickle.dumps(['ready', 'y']))
+        else:
+            self.ready_text = 'Not ready'
+            App.get_running_app().connection.transport.write(pickle.dumps(['ready', 'n']))
+
+    def begin_press(self):
+        App.get_running_app().connection.transport.write(pickle.dumps(['begin']))
+
+
+class RV(RecycleView):
+
+    players = ListProperty()
+
+    def __init__(self, **kwargs):
+        super(RV, self).__init__(**kwargs)
+        self.data = [{'text': str(x)} for x in self.players]
+        App.get_running_app().rv = self
+
+    def on_players(self, instance, value):
+        self.data = [{'text': str(x)} for x in self.players]
+
 
 class Deck(Widget):
+
     images = ListProperty()
     im = NumericProperty()
 
@@ -156,7 +205,9 @@ class DeckImage(CardImage):
 class DabbleApp(App):
     sm = ObjectProperty()
     gm = ObjectProperty()
+    lobby = ObjectProperty()
     name = StringProperty('')
+    rv = ObjectProperty()
 
     def build(self):
         sm = SM()
