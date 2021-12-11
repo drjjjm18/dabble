@@ -18,6 +18,7 @@ from twisted.protocols.basic import LineReceiver
 import pickle
 from kivy.clock import Clock
 
+
 class Client(LineReceiver):
 
     def __init__(self, **kwargs):
@@ -38,8 +39,17 @@ class Client(LineReceiver):
             self.app.lobby.latest = msg[-1]
             return
         if msg[0] == 'begin':
-            print('beginning')
+            print(msg[1], msg[2])
+            self.app.gm.next_deck = msg[1]
+            self.app.gm.next_card = msg[2]
             self.app.sm.current = 'gamescreen'
+            return
+        if msg[0] == 'next':
+            self.app.gm.update_cards(deck=msg[1])
+            return
+        if msg[0] == 'win':
+            self.app.gm.update_cards(deck=msg[1], card=self.app.gm.ids.deck.images)
+            self.app.gm.total_cards += 1
             return
 
         return
@@ -65,10 +75,13 @@ class GameScreen(Screen):
 
     cards = ListProperty()
     image_lookup = DictProperty()
-    im = NumericProperty(0)
+    #im = NumericProperty(0)
     card_match = NumericProperty(100)
     deck_match = NumericProperty(100)
     display_text = StringProperty()
+    next_deck = ListProperty()
+    next_card = ListProperty()
+    total_cards = NumericProperty(1)
 
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
@@ -77,11 +90,12 @@ class GameScreen(Screen):
         self.image_lookup = dobble.image_lookup()
 
     def matched(self):
-        print('match called')
+        app = App.get_running_app()
+        app.connection.transport.write(pickle.dumps(['match']))
 
-    def on_touch_down(self, touch):
-        self.ids.card.images = choice(self.cards)
-        self.ids.deck.images = choice(self.cards)
+    # def on_touch_down(self, touch):
+    #     self.ids.card.images = choice(self.cards)
+    #     self.ids.deck.images = choice(self.cards)
 
     def on_enter(self, *args):
         self.count_down()
@@ -92,6 +106,16 @@ class GameScreen(Screen):
         Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'Game beginning in 2'), 3)
         Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'Game beginning in 1'), 4)
         Clock.schedule_once(lambda dt: setattr(self, 'display_text', 'BEGIN'), 5)
+        Clock.schedule_once(lambda dt: self.update_cards(self.next_deck, self.next_card), 5)
+
+    def update_cards(self, deck=None, card=None):
+        if card is not None:
+            self.ids.card.images = card
+        if deck is not None:
+            self.ids.deck.images = deck
+
+    def win(self):
+        self.ids
 
 
 class EnterName(Screen):

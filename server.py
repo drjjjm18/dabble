@@ -42,6 +42,11 @@ class QOTD(LineReceiver):
                 self.factory.starting = True
                 self.factory.begin_game()
 
+        if x == 'match':
+            if not self.factory.won:
+                self.factory.won = True
+                self.factory.next_card(self)
+
     def update_players(self):
         # self.factory.update_player_list()
         l1 = ['players']
@@ -59,6 +64,8 @@ class QOTDFactory(Factory):
         self.cons = []
         self.starting = False
         self.cards = []
+        self.finished = False
+        self.won = False
 
     def buildProtocol(self, addr):
         return QOTD(self)
@@ -86,6 +93,15 @@ class QOTDFactory(Factory):
             self.starting = False
             for x in self.cons:
                 x.ready = False
+
+    def next_card(self, winner):
+        if len(self.cards) > 0:
+            deckcard = self.cards.pop(0)
+            for x in self.cons:
+                if x != winner:
+                    x.sendLine(pickle.dumps(['next', deckcard]))
+            winner.sendLine(pickle.dumps(['win', deckcard]))
+            self.won = False
 
 
 endpoint = TCP4ServerEndpoint(reactor, 8001)
