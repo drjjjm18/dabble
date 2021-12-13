@@ -4,6 +4,17 @@
     EnterName
     Lobby
     GameScreen
+    Results
+
+<Results>:
+    name: 'results'
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint_y: 0.1
+            text: 'Results'
+        Label:
+            text: root.display_string
 
 <GameScreen>:
     name: 'gamescreen'
@@ -11,6 +22,11 @@
         Label:
             pos_hint: {'center_x': 0.5, 'center_y': 0.9}
             text: root.display_text
+        Button:
+            pos_hint: {'center_x': 0.85, 'center_y': 0.9}
+            size_hint: 0.25, 0.1
+            text: 'Leave Game'
+            on_press: root.leave_game()
         Deck:
             id: deck
             pos_hint: {'center_x': 0.5, 'center_y': 0.675}
@@ -49,7 +65,7 @@
                     source: root.image_lookup[self.image]
         Card:
             id: card
-            im: root.im
+            # im: root.im
             pos_hint: {'center_x': 0.5, 'center_y': 0.25}
             FloatLayout:
                 CardImage:
@@ -147,7 +163,9 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             size_hint: 0.5, 0.1
             font_size: 35
-            on_text: app.name = self.text
+            on_text:
+                self.text = self.text.replace('\n', '').replace('\r', '')
+                app.name = self.text
         Button:
             pos_hint: {'center_x': 0.5, 'center_y': 0.35}
             size_hint: 0.5, 0.1
