@@ -9,6 +9,8 @@ from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
 from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty, ListProperty, NumericProperty, DictProperty, StringProperty
 from random import choice, randint, uniform
 from kivy.support import install_twisted_reactor
@@ -36,8 +38,8 @@ class Client(LineReceiver):
         if msg[0] == 'players':
             if self.app.sm.current == 'entername':
                 self.app.sm.current = 'lobby'
-            self.app.rv.players = msg[1:]
-            self.app.lobby.latest = msg[-1]
+            self.app.rv.players = msg[1]
+            self.app.lobby.latest = list(msg[1].keys())[-1]
             return
         if msg[0] == 'begin':
             print(msg[1], msg[2])
@@ -59,7 +61,7 @@ class Client(LineReceiver):
             self.app.gm.display_text = 'GAME FINISHED'
             self.app.gm.update_cards(deck=[0, 0, 0, 0, 0, 0, 0, 0])
             Clock.schedule_once(lambda dt: setattr(self.app.sm, 'current', 'results'), 2)
-            self.app.results.scores, self.app.results.result_string = msg[1], msg[2]
+            self.app.results.scores, self.app.results.results_string = msg[1], msg[2]
             return
         return
 
@@ -85,20 +87,42 @@ class Results(Screen):
     scores = DictProperty()
     results_string = StringProperty()
     data = DictProperty()
-    display_string = StringProperty()
 
     def __init__(self, **kwargs):
         super(Results, self).__init__(**kwargs)
         App.get_running_app().results = self
 
     def on_enter(self, *args):
-        # for x in range(len(self.scores.keys())):
-        #     Clock.schedule_once(lambda dt: setattr(self, 'data', [{'text': f'{y}: {self.scores[y]}'} for y in list(self.scores.keys())[:x+1]]), x+1)
-        # Clock.schedule_once(lambda dt: setattr(self, 'display_string', self.results_string), len(self.scores.keys())+1)
-        for x in self.scores.keys():
-            Lab = Label(text=f'{x} scored: {self.scores[x]}')
-            self.add_widget(Lab)
+        print(self.results_string)
+        self.box = BoxLayout(orientation='vertical')
+        self.add_widget(self.box)
+        self.box.add_widget(Label(size_hint_y=0.1, text='Results'))
+        Clock.schedule_once(self.add_results, 2)
+        players = list(self.scores.keys())
+        num_players = len(players)
+        # self.rv = RV(data=self.data)
+        # self.box.add_widget(self.rv)
 
+        # for x in range(1, num_players+1):
+        #     print(x)
+        #     Clock.schedule_once(lambda dt: setattr(self.rv, 'data', [{'text': str(y)+': '+str(self.scores[y])} for y in players[:x]]), x*2)
+        lab = Label(text=self.results_string)
+        Clock.schedule_once(lambda dt: self.box.add_widget(lab), num_players+3)
+        but = Button(text='return to lobby', on_press=self.return_to_lobby)
+        Clock.schedule_once(lambda dt: self.box.add_widget(but), num_players + 3)
+
+    def on_leave(self, *args):
+        self.remove_widget(self.box)
+
+    def add_results(self, dt):
+        for x in range(len(self.scores.keys())):
+            key = list(self.scores.keys())[x]
+            print(x, key)
+            lab = Label(text=f'{key} scored: {self.scores[key]}')
+            self.box.add_widget(lab)
+
+    def return_to_lobby(self, *args):
+        App.get_running_app().sm.current='lobby'
 
 class GameScreen(Screen):
 
@@ -143,7 +167,9 @@ class GameScreen(Screen):
         app = App.get_running_app()
         app.connection.sendLine(pickle.dumps(['left']))
         app.sm.current = 'lobby'
-        ims = [0, 0, 0, 0, 0, 0, 0, 0]
+
+    def on_leave(self, *args):
+        ims = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.ids.card.images, self.ids.deck.images = ims, ims
 
 
@@ -182,15 +208,15 @@ class Lobby(Screen):
 
 class RV(RecycleView):
 
-    players = ListProperty()
+    players = DictProperty()
 
     def __init__(self, **kwargs):
         super(RV, self).__init__(**kwargs)
-        self.data = [{'text': str(x)} for x in self.players]
+        self.data = [{'text': str(x)+': '+str(self.players[x])} for x in list(self.players.keys())]
         App.get_running_app().rv = self
 
     def on_players(self, instance, value):
-        self.data = [{'text': str(x)} for x in self.players]
+        self.data = [{'text': str(x)+': '+str(self.players[x])} for x in list(self.players.keys())]
 
 
 class Deck(Widget):

@@ -8,13 +8,7 @@
 
 <Results>:
     name: 'results'
-    BoxLayout:
-        orientation: 'vertical'
-        Label:
-            size_hint_y: 0.1
-            text: 'Results'
-        Label:
-            text: root.display_string
+
 
 <GameScreen>:
     name: 'gamescreen'
@@ -100,13 +94,6 @@
                     center: card.center_x+60, card.center_y-40
                     image: card.images[7]
                     source: root.image_lookup[self.image]
-
-        Label:
-            pos_hint: {'center_x': 0.8, 'center_y': 0.3}
-            text: 'Total Cards:'
-        Label:
-            pos_hint: {'center_x': 0.8, 'center_y': 0.25}
-            text: str(card.total)
 
 <Deck>:
     size_hint: 0.35, None
