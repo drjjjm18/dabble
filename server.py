@@ -146,6 +146,6 @@ class QOTDFactory(Factory):
             self.finished = True
 
 
-endpoint = TCP4ServerEndpoint(reactor, 8001)
+endpoint = TCP4ServerEndpoint(reactor, 8002)
 endpoint.listen(QOTDFactory())
 reactor.run()

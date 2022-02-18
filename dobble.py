@@ -12,21 +12,23 @@ symbols = ["Anchor", "Apple", "Bomb", "Cactus", "Candle", "Carrot",
            "Sun", "Sunglasses", "Target", "Taxi", "Tortoise", "Treble clef", "Tree",
            "Water drop", "Dog", "Yin and Yang", "Zebra"]
 
-# The number of symbols on a card has to be a prime number + 1
-numberOfSymbolsOnCard = 8  # (7 + 1)
-shuffleSymbolsOnCard = False
-
-cards = []
-
-# Work out the prime number
-n = numberOfSymbolsOnCard - 1
-
-# Total number of cards that can be generated following the Dobble rules
-numberOfCards = n ** 2 + n + 1  # e.g. 7^2 + 7 + 1 = 57
+# # The number of symbols on a card has to be a prime number + 1
+# numberOfSymbolsOnCard = 8  # (7 + 1)
+# shuffleSymbolsOnCard = False
+#
+# cards = []
+#
+# # Work out the prime number
+# n = numberOfSymbolsOnCard - 1
+#
+# # Total number of cards that can be generated following the Dobble rules
+# numberOfCards = n ** 2 + n + 1  # e.g. 7^2 + 7 + 1 = 57
 
 
 def create_cards(shuffle_cards=True):
     # Add first set of n+1 cards (e.g. 8 cards)
+    n = 7
+    cards = []
     for i in range(n + 1):
         # Add new card with first symbol
         cards.append([1])

@@ -245,6 +245,30 @@ class SM(ScreenManager):
         App.get_running_app().sm = self
 
 
+class LDA(Screen):
+    text = StringProperty()
+
+    def __init__(self, **kwargs):
+        super(LDA, self).__init__(**kwargs)
+        self.text = 'LOADING'
+        self.count = 0
+
+    def on_enter(self, *args):
+        Clock.schedule_interval(self.update, 1)
+
+    def update(self, dt):
+        self.count += 1
+        self.text = self.text+'.'
+        if self.count > 4:
+            Clock.unschedule(self.update)
+            self.add_widget(Image(source='resized/riplda.jpg', on_touch_down=self.enter))
+            Clock.schedule_once(self.enter, 5)
+
+    def enter(self, *args):
+        App.get_running_app().sm.current = 'entername'
+        Clock.unschedule(self.enter)
+
+
 class CardImage(Image):
     image = NumericProperty()
     angle = NumericProperty()
@@ -297,7 +321,7 @@ class DabbleApp(App):
         return sm
 
     def connect_to_server(self):
-        reactor.connectTCP('localhost', 8001, NewClientFactory())  # server: '18.222.132.112' # home server:81.100.102.190
+        reactor.connectTCP('3.144.157.106', 8002, NewClientFactory()) #3.144.157.106
 
 
 if __name__ == '__main__':
