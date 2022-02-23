@@ -1,8 +1,8 @@
 import dobble
 from kivy.config import Config
 Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '600')
-Config.set('graphics', 'height', '600')
+Config.set('graphics', 'width', '800')
+Config.set('graphics', 'height', '800')
 from kivy.app import App
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.widget import Widget
@@ -276,8 +276,9 @@ class CardImage(Image):
     def __init__(self, **kwargs):
         super(CardImage, self).__init__(**kwargs)
         self.angle = randint(0, 360)
-        self.rand_x = 0.25
-        self.rand_y = 0.5
+        self.allow_stretch=True
+        self.rand_x = 0.75
+        self.rand_y = 1
         self.size_hint = uniform(self.rand_x, self.rand_y), uniform(self.rand_x, self.rand_y)
 
     def on_touch_down(self, touch):

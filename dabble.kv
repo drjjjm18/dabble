@@ -30,7 +30,7 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.675}
             FloatLayout:
                 DeckImage:
-                    center: deck.center_x - 40, deck.center_y -50
+                    center: deck.center_x - dp(40), deck.center_y - dp(50)
                     image: deck.images[0]
                     source: root.image_lookup[self.image]
                 DeckImage:
@@ -38,27 +38,27 @@
                     image: deck.images[1]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x-60, deck.center_y+10
+                    center: deck.center_x-dp(60), deck.center_y+dp(10)
                     image: deck.images[2]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x-20, deck.center_y+70
+                    center: deck.center_x-dp(20), deck.center_y+dp(70)
                     image: deck.images[3]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+10, deck.center_y-65
+                    center: deck.center_x+dp(10), deck.center_y-dp(65)
                     image: deck.images[4]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+60, deck.center_y+10
+                    center: deck.center_x+dp(60), deck.center_y+dp(10)
                     image: deck.images[5]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+40, deck.center_y+60
+                    center: deck.center_x+dp(40), deck.center_y+dp(60)
                     image: deck.images[6]
                     source: root.image_lookup[self.image]
                 DeckImage:
-                    center: deck.center_x+60, deck.center_y-40
+                    center: deck.center_x+dp(60), deck.center_y-dp(40)
                     image: deck.images[7]
                     source: root.image_lookup[self.image]
         Card:
@@ -67,7 +67,7 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.25}
             FloatLayout:
                 CardImage:
-                    center: card.center_x - 40, card.center_y -50
+                    center: card.center_x - dp(40), card.center_y - dp(50)
                     image: card.images[0]
                     source: root.image_lookup[self.image]
                 CardImage:
@@ -75,27 +75,27 @@
                     image: card.images[1]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x-60, card.center_y+10
+                    center: card.center_x-dp(60), card.center_y+dp(10)
                     image: card.images[2]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x-20, card.center_y+70
+                    center: card.center_x-dp(20), card.center_y+dp(70)
                     image: card.images[3]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+10, card.center_y-65
+                    center: card.center_x+dp(10), card.center_y-dp(65)
                     image: card.images[4]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+60, card.center_y+10
+                    center: card.center_x+dp(60), card.center_y+dp(10)
                     image: card.images[5]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+40, card.center_y+60
+                    center: card.center_x+dp(40), card.center_y+dp(60)
                     image: card.images[6]
                     source: root.image_lookup[self.image]
                 CardImage:
-                    center: card.center_x+60, card.center_y-40
+                    center: card.center_x+dp(60), card.center_y-dp(40)
                     image: card.images[7]
                     source: root.image_lookup[self.image]
 
@@ -121,6 +121,10 @@
 
 
 <CardImage>:
+    #size_hint_x: None
+    #size_hint_y: None
+    #width: dp(100)
+    #height: dp(100)
     canvas.before:
         PushMatrix
         Rotate:
