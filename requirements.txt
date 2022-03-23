@@ -1,2 +1,2 @@
-twisted
+twisted>=22.2.0
 kivy
